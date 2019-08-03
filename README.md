@@ -1,5 +1,7 @@
 # barikoi
 
+<a href = "https://pub.dev/packages/barikoi"><img src="https://img.shields.io/pub/vpre/barikoi"></a>
+
 A dart package for barikoi API. Barikoi is a Bangladeshi local data provider about places. Their API Helps us to find address, geocode and reverse geocode place in Dhaka in our local context.
 
 ## Usage
