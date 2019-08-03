@@ -12,6 +12,7 @@ import 'models/reverse_geocoding.dart';
 import 'package:http/http.dart' as http;
 
 class BarikoiApi {
+  /// The api key. Must be obtained from https://barikoi.com/home
   final String apiKey;
   final String _baseurl = "barikoi.xyz";
   final String _apiUrl = "/v1/api/search/";
@@ -29,6 +30,8 @@ class BarikoiApi {
     _nearByUrl = "nearby/$apiKey/0.5/10";
     _distanceUrl = "distance/$apiKey/";
   }
+
+  /// calls the reverseGeocoding api and returns [List<PlaceRGC>], from where user can access address, city, division etc
   Future<List<PlaceRGC>> reverseGeoCoding(
       {@required String lat, @required String lon}) async {
     assert(lat != null && lon != null);
@@ -65,6 +68,7 @@ class BarikoiApi {
     return result;
   }
 
+  /// calls the geoCoding api and returns [List<PlaceGc>], from where user can access address, city, division etc
   Future<List<PlaceGc>> geoCoding({@required String placeId}) async {
     assert(placeId != null);
     http.Client _client = http.Client();
@@ -97,6 +101,7 @@ class BarikoiApi {
     return result;
   }
 
+  /// calls the autoComplete api and returns [List<PlaceAC>], from where user can access address, city, division etc
   Future<List<PlaceAC>> autoComplete({@required String query}) async {
     assert(query != null);
     var result;
@@ -126,6 +131,7 @@ class BarikoiApi {
     return result;
   }
 
+  /// calls the nearby api and returns [List<PlaceNearby>], from where user can access address, city, division etc
   Future<List<PlaceNearby>> nearby(
       {@required String lat, @required String lon}) async {
     assert(lat != null && lon != null);
@@ -162,6 +168,7 @@ class BarikoiApi {
     return result;
   }
 
+  /// Calls the distance api and returns the distance between two cooridnates
   Future<String> distance({
     @required String sourceLongitude,
     @required String sourceLatitude,
@@ -186,18 +193,21 @@ class BarikoiApi {
           .timeout(_timeoutDuration);
       if (response.statusCode == 200) {
         final jsonString = jsonDecode(response.body);
-        if (jsonString['message'] == null) {
-          final distance = distanceFromJson(response.body);
-          result = distance.distance;
-        } else {
-          throw NotFoundException('Not Found');
-        }
+        print(jsonString['message']);
+
+        final distance = distanceFromJson(response.body);
+        result = distance.distance;
       } else if (response.statusCode == 429) {
         throw (LimitExceededException('Request limit is over'));
+      } else if (response.statusCode == 404) {
+        throw NotFoundException('Not Found');
       }
     } on TimeoutException {
       throw (TimeoutException('request timed out'));
+    } on NotFoundException {
+      throw NotFoundException("Not found");
     } catch (e) {
+      print(e.toString());
       throw (e);
     } finally {
       _client.close();
