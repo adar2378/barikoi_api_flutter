@@ -1,5 +1,5 @@
 name: barikoi
-description: A new Flutter package project.
+description: A dart package for barikoi API.
 version: 0.0.1
 author:
 homepage:
@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^0.12.0+2
 
 dev_dependencies:
   flutter_test:
